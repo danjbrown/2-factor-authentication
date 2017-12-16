@@ -7,6 +7,7 @@ var QRCode              = require('qrcode');
 
 // Config vars
 var secretKeyLength = 20;
+var siteName = "My Website";
 
 // Server config
 var port = process.env.PORT || 8080;
@@ -21,7 +22,12 @@ app.get('/create-secret-key', function(req, res) {
         length: secretKeyLength
     });
 
-    QRCode.toDataURL(secret.otpauth_url, function(err, imageData) {
+    var otpAuthUrl = speakeasy.otpauthURL({
+        secret: secret.ascii,
+        label: siteName
+    });
+
+    QRCode.toDataURL(encodeURI(otpAuthUrl), function(err, imageData) {
         res.status(200).json({
             success: true,
             secretKey: secret.base32,
@@ -36,7 +42,7 @@ app.post('/verify-totp', function(req, res) {
     req.checkBody("userId", "Invalid userId").isInt();
 
     // get the secret key for the user from the database
-    var secret = 'NVPGKW2EIJWWCP3ZOIYDWQ2OIVFFWRZ2';
+    var secret = '';
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
