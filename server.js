@@ -5,6 +5,7 @@ var expressValidator  	= require('express-validator');
 var speakeasy           = require('speakeasy');
 var QRCode              = require('qrcode');
 
+// Config vars
 var secretKeyLength = 20;
 
 // Server config
@@ -14,10 +15,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(expressValidator());
 
-// Generate and return a new secret key and QR code image data
+// Generate and return a new secret key (SHA1) and base64 encoded QR code image data
 app.get('/create-secret-key', function(req, res) {
-    var secret = speakeasy.generateSecret({length: secretKeyLength});
-    var otpAuthUrl = encodeURI('otpauth://totp/My Site?secret='+secret);
+    var secret = speakeasy.generateSecret({
+        length: secretKeyLength
+    });
 
     QRCode.toDataURL(secret.otpauth_url, function(err, imageData) {
         res.status(200).json({
@@ -34,28 +36,30 @@ app.post('/verify-totp', function(req, res) {
     req.checkBody("userId", "Invalid userId").isInt();
 
     // get the secret key for the user from the database
-    var secret = '';
+    var secret = 'NVPGKW2EIJWWCP3ZOIYDWQ2OIVFFWRZ2';
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
             res.status(400).json({success: false, message: result.array()});
         } else {
             // what is the current TOTP?
-            var token = speakeasy.totp({
+            var currentTotp = speakeasy.totp({
               secret: secret,
               encoding: 'base32'
             });
 
-console.log(req.query.totp);
-
-            if (token === req.query.totp) {
+            // is the user entered TOTP valid?
+            if (currentTotp == req.body.totp) {
                 res.status(200).json({
                     success: true,
                     message: 'TOTP is valid'
                 });
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Invalid TOTP'
+                });
             }
-
-            res.status(400).json({success: false, message: 'Invalid TOTP'});
         }
     });
 });

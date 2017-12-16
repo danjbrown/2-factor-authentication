@@ -1,6 +1,6 @@
 # 2 Factor Authentication
 
-A basic Node.js server to handle 2 factor authentication. One service generates and returns a secret key with base64 encoded image data for the QR code, the other verifies a TOTP (time based one time password) for a given user id. You'll need to implement database storage for the shared key with a user id primary key.
+A basic Node.js server to handle 2 factor authentication. One service generates and returns a SHA1 secret key with base64 encoded image data for the QR code, the other verifies a TOTP (time based one time password) for a given user id. You'll need to implement database storage for the shared key with a user id primary key,the latter of which is passed to the verify service.
 Uses nodemon to automatically restart the server when code changes are saved.
 Sample tests written using Mocha and Chai will follow.
 
@@ -40,7 +40,7 @@ Create a POST request to http://localhost:8080/verify-totp
 ```
   {
     userId: 123456,
-    totp: '222444'
+    totp: 222444
   }
 ```
 
