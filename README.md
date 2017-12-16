@@ -8,10 +8,9 @@ Sample tests written using Mocha and Chai will follow.
 
 1. Clone the repository
 2. Install the dependencies `npm install`
-3. Change the jwtSecretKey in `server.js`
-4. Add an authentication check as required, for example from users in a database.
-5. Start the server `nodemon server.js`
-6. Make web service requests as described below; you could use Postman to experiment.
+3. Start the server `nodemon server.js`
+4. Make web service requests as described below; you could use Postman to experiment.
+5. Run the tests `npm run test`
 
 ### Generate and return a new shared key and base64 encoded image data for the QR code
 
