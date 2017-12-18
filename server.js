@@ -39,7 +39,7 @@ app.post('/verify-totp', function(req, res) {
     req.checkBody("userId", "Invalid userId").isInt();
 
     // get the secret key for the user from the database
-    const secret = 'PJFE6YJMHIXESUSBGQYGEUJ2IVNCQXRVKASSYR2JGZLG4WDZPE7A';
+    const secret = '';
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
