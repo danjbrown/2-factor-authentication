@@ -1,12 +1,12 @@
 # 2 Factor Authentication
 
-A basic Node.js server to handle 2 factor authentication. One service generates and returns a SHA1 secret key with base64 encoded image data for the QR code, the other verifies a TOTP (time based one time password) for a given user id. You'll need to implement database storage for the shared key with a user id primary key,the latter of which is passed to the verify service.
+A Node.js RESTful API to handle 2 factor authentication using speakeasy. One API generates and returns a SHA1 secret key with base64 encoded image data for the QR code, the other verifies a TOTP (time based one time password) for a given user id. The shared key should be stored in a database with the user id (primary key), the latter of which is passed to the verify service. Note that it's important to implement the database storage because the shared key itself should never be visible in a verification HTTP request.
 Uses nodemon to automatically restart the server when code changes are saved.
 Includes tests written using Mocha and Chai.
 
 ## Usage
 
-1. Clone the repository
+1. Clone the repository and change the siteName variable in server.js to reflect the label you want displayed in the authenticator app.
 2. Install the dependencies `npm install`
 3. Start the server `nodemon server.js`
 4. Make web service requests as described below; you could use Postman to experiment.

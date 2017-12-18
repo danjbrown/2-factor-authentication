@@ -1,16 +1,15 @@
-var express 			= require('express');
-var app         		= express();
-var bodyParser  		= require('body-parser');
-var expressValidator  	= require('express-validator');
-var speakeasy           = require('speakeasy');
-var QRCode              = require('qrcode');
+const express 			= require('express');
+const app         		= express();
+const bodyParser  		= require('body-parser');
+const expressValidator  = require('express-validator');
+const speakeasy         = require('speakeasy');
+const QRCode            = require('qrcode');
 
 // Config vars
-var secretKeyLength = 20;
-var siteName = "My Website";
+const siteName = "My Website";
 
 // Server config
-var port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -18,11 +17,9 @@ app.use(expressValidator());
 
 // Generate and return a new secret key (SHA1) and base64 encoded QR code image data
 app.get('/create-secret-key', function(req, res) {
-    var secret = speakeasy.generateSecret({
-        length: secretKeyLength
-    });
+    const secret = speakeasy.generateSecret();
 
-    var otpAuthUrl = speakeasy.otpauthURL({
+    const otpAuthUrl = speakeasy.otpauthURL({
         secret: secret.ascii,
         label: siteName
     });
@@ -42,30 +39,30 @@ app.post('/verify-totp', function(req, res) {
     req.checkBody("userId", "Invalid userId").isInt();
 
     // get the secret key for the user from the database
-    var secret = '';
+    const secret = 'PJFE6YJMHIXESUSBGQYGEUJ2IVNCQXRVKASSYR2JGZLG4WDZPE7A';
 
     req.getValidationResult().then(function(result) {
         if (!result.isEmpty()) {
             res.status(400).json({success: false, message: result.array()});
         } else {
             // what is the current TOTP?
-            var currentTotp = speakeasy.totp({
+            const currentTotp = speakeasy.totp({
               secret: secret,
               encoding: 'base32'
             });
 
             // is the user entered TOTP valid?
             if (currentTotp == req.body.totp) {
-                res.status(200).json({
+                return res.status(200).json({
                     success: true,
                     message: 'TOTP is valid'
                 });
-            } else {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid TOTP'
-                });
             }
+            
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid TOTP'
+            });
         }
     });
 });
